@@ -34,21 +34,24 @@ pipeline {
                 script {
                     def dockerfile = "spring-petclinic/Dockerfile"
                     def registry = "169942349975.dkr.ecr.us-east-1.amazonaws.com"
+                    def region = "us-east-1"
+                    def app_name = "petclinic"
 
                     git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
 
                     // cleanup current user docker credentials
                     sh 'rm -f ~/.dockercfg ~/.docker/config.json || true'
 
-                    withAWS(credentials: 'aws-credentials', region: 'us-east-1') {
-                        sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}'
-                        sh "docker build -t petclinic:${env.BUILD_ID} -f ${dockerfile} ."
+                    withAWS(credentials: 'aws-credentials', region: "${region}") {
+                        sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
 
-                        sh "docker tag petclinic:${env.BUILD_ID} ${registry}/petclinic:${env.BUILD_ID}"
-                        sh "docker tag petclinic:${env.BUILD_ID} ${registry}/petclinic:latest"
+                        sh "docker build -t ${app_name}:${env.BUILD_ID} -f ${dockerfile} ."
 
-                        sh "docker push ${registry}/petclinic:${env.BUILD_ID}"
-                        sh "docker push ${registry}/petclinic:latest"
+                        sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:${env.BUILD_ID}"
+                        sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:latest"
+
+                        sh "docker push ${registry}/${app_name}:${env.BUILD_ID}"
+                        sh "docker push ${registry}/${app_name}:latest"
                     }
                 }
             }
