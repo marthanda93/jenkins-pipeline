@@ -18,11 +18,13 @@ pipeline {
 
         stage ('Build') {
             steps {
-                try {
-                    sh './mvnw package' 
-                } catch (Exception e) {
-                    echo 'Exception occurred: ' + e.toString()
-                    sh 'Handle the exception!'
+                script {
+                    try {
+                        sh './mvnw package'
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                        sh 'Handle the exception!'
+                    }
                 }
             }
         }
