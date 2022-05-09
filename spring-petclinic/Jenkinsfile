@@ -37,7 +37,7 @@ pipeline {
                     // cleanup current user docker credentials
                     sh 'rm -f ~/.dockercfg ~/.docker/config.json || true'
 
-                    docker.withRegistry('169942349975.dkr.ecr.us-east-1.amazonaws.com', 'aws-credentials') {
+                    docker.withRegistry('http://169942349975.dkr.ecr.us-east-1.amazonaws.com', 'aws-credentials') {
                         def customImage = docker.build("petclinic:${env.BUILD_ID}", "./spring-petclinic/Dockerfile")
                         customImage.push()
                     }
