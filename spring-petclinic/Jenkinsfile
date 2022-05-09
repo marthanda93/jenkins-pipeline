@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
-                    ls -l
+                    sh 'pwd; la -l'
                 }
             }
         }
