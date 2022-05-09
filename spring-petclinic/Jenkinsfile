@@ -39,10 +39,9 @@ pipeline {
 
                     withAWS(credentials: 'aws-credentials', region: 'us-east-1') {
                         sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 169942349975.dkr.ecr.us-east-1.amazonaws.com'
-                        sh 'ls -l ./spring-petclinic'
 
-    def dockerfile = 'spring-petclinic/Dockerfile'
-    def customImage = docker.build("petclinic:${env.BUILD_ID}", "-f ${dockerfile} ./dockerfiles")
+    def dockerfile = 'spring-petclinic'
+    def customImage = docker.build("petclinic:${env.BUILD_ID}", "-f ${dockerfile} ./Dockerfile")
 
 
                         // def customImage = docker.build("petclinic:${env.BUILD_ID}", "spring-petclinic/Dockerfile")
