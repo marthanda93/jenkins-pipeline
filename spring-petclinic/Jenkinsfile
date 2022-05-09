@@ -45,8 +45,12 @@ pipeline {
                     if (OUTPUT == '0') {
                         echo 'Found'
                     } else {
+                        sh(script: 'curl -sH "Authorization: JWT ' + TOKEN + '" "https://hub.docker.com/v2/repositories/marthanda93/es/tags/appB"')
+
                         echo OUTPUT
                         echo "--------"
+
+                        println OUTPUT.getClass()
 
                         withAWS(credentials: 'aws-credentials', region: "${region}") {
                             sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
