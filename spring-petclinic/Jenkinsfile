@@ -38,7 +38,7 @@ pipeline {
                     sh 'rm -f ~/.dockercfg ~/.docker/config.json || true'
 
                     withAWS(credentials: 'aws-credentials', region: 'us-east-1') {
-                        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 169942349975.dkr.ecr.us-east-1.amazonaws.com
+                        sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 169942349975.dkr.ecr.us-east-1.amazonaws.com'
                         
                         def customImage = docker.build("petclinic:${env.BUILD_ID}", "./spring-petclinic/Dockerfile")
                         customImage.push()
