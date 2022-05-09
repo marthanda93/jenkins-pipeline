@@ -37,7 +37,7 @@ pipeline {
                     def region = "us-east-1"
                     def app_name = "petclinic"
 
-                    def TOKEN = sh(script: 'curl -sSLd "username=marthanda93&password=juscoAE#93" https://hub.docker.com/v2/users/login | jq -r ".token"', returnStdout: true)
+                    def TOKEN = sh(script: 'curl -sSLd "username=marthanda93&password=password" https://hub.docker.com/v2/users/login | jq -r ".token"', returnStdout: true)
                     def OUTPUT = sh(script: 'curl -sH "Authorization: JWT ' + TOKEN + '" "https://hub.docker.com/v2/repositories/marthanda93/es/tags/appB" | jq ".message" | grep "not found" | wc -l', returnStdout: true)
 
                     git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
@@ -51,7 +51,7 @@ pipeline {
                         echo "--------"
 
                         println OUTPUT.getClass()
-                        println OUTPUT == "0"
+                        println OUTPUT === "0"
 
                         // withAWS(credentials: 'aws-credentials', region: "${region}") {
                         //     sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
