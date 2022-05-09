@@ -45,24 +45,25 @@ pipeline {
                     if (OUTPUT == "0") {
                         echo 'Found'
                     } else {
-                        sh(script: 'curl -sH "Authorization: JWT ' + TOKEN + '" "https://hub.docker.com/v2/repositories/marthanda93/es/tags/appB"')
+                        sh(script: 'curl -sH "Authorization: JWT ' + TOKEN + '" "https://hub.docker.com/v2/repositories/marthanda93/es/tags/appB" | jq ".message"')
 
                         echo OUTPUT
                         echo "--------"
 
                         println OUTPUT.getClass()
+                        println OUTPUT == "0"
 
-                        withAWS(credentials: 'aws-credentials', region: "${region}") {
-                            sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
+                        // withAWS(credentials: 'aws-credentials', region: "${region}") {
+                        //     sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
 
-                            sh "docker build -t ${app_name}:${env.BUILD_ID} -f ${dockerfile} ."
+                        //     sh "docker build -t ${app_name}:${env.BUILD_ID} -f ${dockerfile} ."
 
-                            sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:${env.BUILD_ID}"
-                            sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:latest"
+                        //     sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:${env.BUILD_ID}"
+                        //     sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:latest"
 
-                            sh "docker push ${registry}/${app_name}:${env.BUILD_ID}"
-                            sh "docker push ${registry}/${app_name}:latest"
-                        }
+                        //     sh "docker push ${registry}/${app_name}:${env.BUILD_ID}"
+                        //     sh "docker push ${registry}/${app_name}:latest"
+                        // }
                     }
                 }
             }
