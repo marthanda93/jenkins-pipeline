@@ -42,10 +42,11 @@ pipeline {
 
                         def dockerfile = 'spring-petclinic/Dockerfile'
                         def customImage = docker.build("petclinic:${env.BUILD_ID}", "-f ${dockerfile} .")
-                        customImage.push()
 
-                        // def customImage = docker.build("petclinic:${env.BUILD_ID}", "spring-petclinic/Dockerfile")
-                        // customImage.push()
+                        docker.withRegistry('https://169942349975.dkr.ecr.us-east-1.amazonaws.com') {
+                            customImage.push("${env.BUILD_NUMBER}")
+                            customImage.push("latest")
+                        }
                     }
                 }
             }
