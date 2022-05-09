@@ -23,7 +23,6 @@ pipeline {
                         sh './mvnw package'
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
-                        sh 'Handle the exception!'
                     }
                 }
             }
