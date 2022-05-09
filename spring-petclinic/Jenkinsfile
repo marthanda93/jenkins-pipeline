@@ -43,7 +43,7 @@ pipeline {
                     git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
 
                     if (OUTPUT == "0") {
-                        echo 'Found'
+                        echo 'Found/n append docker registry image build and push'
                     } else {
                         withAWS(credentials: 'aws-credentials', region: "${region}") {
                             sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
