@@ -37,21 +37,28 @@ pipeline {
                     def region = "us-east-1"
                     def app_name = "petclinic"
 
+                    TOKEN=$( curl -sSLd "username=marthanda93&password=" https://hub.docker.com/v2/users/login | jq -r ".token" )
+                    OUTPUT=$(curl -sH "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/marthanda93/es/tags/appB" | jq '.message' | grep 'not found' | wc -l)
+
                     git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
 
-                    // cleanup current user docker credentials
-                    sh 'rm -f ~/.dockercfg ~/.docker/config.json || true'
+                    if ("${OUTPUT}" == '0') {
+                        echo 'Found'
+                    } else {
+                        echo OUTPUT
+                        echo "--------"
 
-                    withAWS(credentials: 'aws-credentials', region: "${region}") {
-                        sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
+                        withAWS(credentials: 'aws-credentials', region: "${region}") {
+                            sh "aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}"
 
-                        sh "docker build -t ${app_name}:${env.BUILD_ID} -f ${dockerfile} ."
+                            sh "docker build -t ${app_name}:${env.BUILD_ID} -f ${dockerfile} ."
 
-                        sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:${env.BUILD_ID}"
-                        sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:latest"
+                            sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:${env.BUILD_ID}"
+                            sh "docker tag ${app_name}:${env.BUILD_ID} ${registry}/${app_name}:latest"
 
-                        sh "docker push ${registry}/${app_name}:${env.BUILD_ID}"
-                        sh "docker push ${registry}/${app_name}:latest"
+                            sh "docker push ${registry}/${app_name}:${env.BUILD_ID}"
+                            sh "docker push ${registry}/${app_name}:latest"
+                        }
                     }
                 }
             }
