@@ -32,21 +32,23 @@ pipeline {
             options { retry(3) }
             steps {
                 script {
+                    def dockerfile = "spring-petclinic/Dockerfile"
+                    def registry = "169942349975.dkr.ecr.us-east-1.amazonaws.com"
+
                     git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
 
                     // cleanup current user docker credentials
                     sh 'rm -f ~/.dockercfg ~/.docker/config.json || true'
 
                     withAWS(credentials: 'aws-credentials', region: 'us-east-1') {
-                        sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 169942349975.dkr.ecr.us-east-1.amazonaws.com'
+                        sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}'
+                        sh "docker build -t petclinic:${env.BUILD_ID} -f ${dockerfile} ."
 
-                        def dockerfile = 'spring-petclinic/Dockerfile'
-                        def customImage = docker.build("petclinic:${env.BUILD_ID}", "-f ${dockerfile} .")
+                        sh "docker tag petclinic:${env.BUILD_ID} ${registry}/petclinic:${env.BUILD_ID}"
+                        sh "docker tag petclinic:${env.BUILD_ID} ${registry}/petclinic:latest"
 
-                        docker.withRegistry('https://169942349975.dkr.ecr.us-east-1.amazonaws.com') {
-                            customImage.push("${env.BUILD_NUMBER}")
-                            customImage.push("latest")
-                        }
+                        sh "docker push ${registry}/petclinic:${env.BUILD_ID}"
+                        sh "docker push ${registry}/petclinic:latest"
                     }
                 }
             }
