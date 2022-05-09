@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    stages {
+        stage ('Clone') {
+            steps {
+                git url: 'https://github.com/spring-projects/spring-petclinic.git', branch: 'main'
+            }
+        }
+
+        stage ('Initialize') {
+            steps {
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
+            }
+        }
+
+        stage ('Build') {
+            steps {
+                try {
+                    sh './mvnw package' 
+                } catch (Exception e) {
+                    echo 'Exception occurred: ' + e.toString()
+                    sh 'Handle the exception!'
+                }
+            }
+        }
+
+        stage ('Build App Image') {
+            options { retry(3) }
+            steps {
+                script {
+                    git url: 'https://github.com/marthanda93/jenkins-pipeline.git', branch: 'main'
+                    ls -l
+                }
+            }
+        }
+    }
+}

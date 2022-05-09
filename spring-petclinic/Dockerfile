@@ -4,6 +4,6 @@ RUN mkdir -p /usr/local/petclinic
 
 WORKDIR /usr/local/petclinic
 
-COPY target/*.jar ./
+# COPY target/*.jar ./
 
-CMD ["java", "-jar", "*.jar"]
+# CMD ["java", "-jar", "*.jar"]
